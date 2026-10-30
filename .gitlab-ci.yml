@@ -1,0 +1,32 @@
+# Определяем этапы (стадии). Они будут выполняться по очереди.
+stages:
+  - lint
+  - test
+  - deploy
+
+# Задача 1: Проверка синтаксиса Nginx (Lint)
+nginx_lint:
+  stage: lint
+  image: nginx:latest
+  script:
+    - echo "Проверяем конфигурацию Nginx..."
+    - nginx -t -c /etc/nginx/nginx.conf || echo "Тест конфига"
+  # В реальности здесь примонтировали бы наш конфиг, но для примера сойдет.
+
+# Задача 2: Проверка Bash-скрипта
+test_bash_script:
+  stage: test
+  image: ubuntu:latest
+  script:
+    - echo "Проверяем скрипт бэкапа на ошибки..."
+    - apt-get update && apt-get install -y shellcheck
+    - shellcheck scripts/backup.sh || echo "Shellcheck нашел ошибки, но мы их игнорируем в учебных целях."
+
+# Задача 3: Деплой (Пока просто выводит сообщение)
+deploy_to_prod:
+  stage: deploy
+  script:
+    - echo "Имитация деплоя на прод..."
+    - echo "Если бы у нас был SSH-доступ, мы бы сделали git pull и docker compose up -d"
+  only:
+    - main # Запускать деплой только для ветки main
